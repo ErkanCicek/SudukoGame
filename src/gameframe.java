@@ -1,5 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Objects;
 
 public class gameframe extends JFrame {
     int screenwidth = 800;
@@ -11,6 +16,7 @@ public class gameframe extends JFrame {
     JPanel gamePanel;
     JPanel controlPanel;
     JPanel inputPanel;
+    final Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     String value = null;
 
@@ -58,6 +64,8 @@ public class gameframe extends JFrame {
         boxStyle2(5,8);
         addButton();
         addActionListenerBTN();
+        addFocusListenerField();
+        cursorDef();
 
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
@@ -96,6 +104,14 @@ public class gameframe extends JFrame {
         inputPanel.add(erase);
     }
 
+    public void cursorDef(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                textField[j].setCursor(cursor);
+            }
+        }
+    }
+
     public void addActionListenerBTN(){
         for (JToggleButton button : buttons) {
             JToggleButton temp;
@@ -112,7 +128,32 @@ public class gameframe extends JFrame {
             });
         }
     }
-
+    public void addFocusListenerField(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                JTextField temp;
+                temp = textField[j];
+                temp.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        super.mousePressed(e);
+                        if (value == null){
+                            JOptionPane.showMessageDialog(null, "You need to choose a number below to input", "Choose a number!", JOptionPane.WARNING_MESSAGE);
+                        }else{
+                            if (!temp.isEditable()){
+                                System.out.println("clue");
+                            }else{
+                                if (Objects.equals(value, "erase")){
+                                    value = "";
+                                }
+                                temp.setText(value);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
     public void disableInactiveBtn(){
         for (JToggleButton b : buttons){
             b.setEnabled(b.getText().equals(value));

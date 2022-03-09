@@ -1,9 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Objects;
 
 public class gameframe extends JFrame {
@@ -66,6 +63,7 @@ public class gameframe extends JFrame {
         addActionListenerBTN();
         addFocusListenerField();
         cursorDef();
+        disableKeyInput();
 
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
@@ -103,15 +101,6 @@ public class gameframe extends JFrame {
         buttons[0] = erase;
         inputPanel.add(erase);
     }
-
-    public void cursorDef(){
-        for (JTextField[] textField : textFields) {
-            for (int j = 0; j < textFields.length; j++) {
-                textField[j].setCursor(cursor);
-            }
-        }
-    }
-
     public void addActionListenerBTN(){
         for (JToggleButton button : buttons) {
             JToggleButton temp;
@@ -154,6 +143,15 @@ public class gameframe extends JFrame {
             }
         }
     }
+
+    public void cursorDef(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                textField[j].setCursor(cursor);
+            }
+        }
+    }
+
     public void disableInactiveBtn(){
         for (JToggleButton b : buttons){
             b.setEnabled(b.getText().equals(value));
@@ -162,6 +160,19 @@ public class gameframe extends JFrame {
     public void enableInactiveBtn(){
         for (JToggleButton b : buttons){
             b.setEnabled(true);
+        }
+    }
+    public void disableKeyInput(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                textField[j].addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                        super.keyTyped(e);
+                        e.consume();
+                    }
+                });
+            }
         }
     }
 
@@ -224,6 +235,6 @@ public class gameframe extends JFrame {
 
 
     public static void main(String[] args) {
-        new gameframe();
+        gameframe game = new gameframe();
     }
 }

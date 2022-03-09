@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class gameframe extends JFrame {
     int screenwidth = 800;
@@ -14,7 +12,7 @@ public class gameframe extends JFrame {
     JPanel controlPanel;
     JPanel inputPanel;
 
-    String toggledButtonValue;
+    String value = null;
 
     JToggleButton [] buttons = new JToggleButton[10];
     JTextField [][] textFields = new JTextField[9][9];
@@ -59,6 +57,8 @@ public class gameframe extends JFrame {
         boxStyle1(5,5);
         boxStyle2(5,8);
         addButton();
+        addActionListenerBTN();
+
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
         gameframe.add(gamePanel, BorderLayout.WEST);
@@ -88,14 +88,41 @@ public class gameframe extends JFrame {
             buttons[i] = temp;
             buttons[i].setBounds(x, y, 50,50);
             x = x + 70;
-            addListenerBTN(temp);
             inputPanel.add(buttons[i]);
         }
         JToggleButton erase = new JToggleButton("erase");
         erase.setBounds(650, 37, 80,80);
+        buttons[0] = erase;
         inputPanel.add(erase);
     }
 
+    public void addActionListenerBTN(){
+        for (JToggleButton button : buttons) {
+            JToggleButton temp;
+            temp = button;
+            temp.addActionListener(e -> {
+                if (temp.isSelected()) {
+                    value = temp.getText();
+                    disableInactiveBtn();
+                    System.out.println(value);
+                }else if(!temp.isSelected()){
+                    value = null;
+                    enableInactiveBtn();
+                }
+            });
+        }
+    }
+
+    public void disableInactiveBtn(){
+        for (JToggleButton b : buttons){
+            b.setEnabled(b.getText().equals(value));
+        }
+    }
+    public void enableInactiveBtn(){
+        for (JToggleButton b : buttons){
+            b.setEnabled(true);
+        }
+    }
 
     private void isZero(JTextField temp) {
         if (temp.getText().equals("0")){
@@ -106,14 +133,6 @@ public class gameframe extends JFrame {
         return !temp.getText().equals("");
     }
 
-    private void addListenerBTN(JToggleButton temp){
-        temp.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-            }
-        });
-    }
 
     public void boxStyle1(int row, int col){
         int lRow = row - row % 3;

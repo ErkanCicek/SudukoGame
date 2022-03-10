@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.Objects;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class gameframe extends JFrame {
     int screenwidth = 800;
@@ -13,41 +15,27 @@ public class gameframe extends JFrame {
     JPanel gamePanel;
     JPanel controlPanel;
     JPanel inputPanel;
+    JLabel livesLabel;
+    JLabel livesLabelCount;
     final Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     String value = null;
+    int lives = 3;
 
     JToggleButton [] buttons = new JToggleButton[10];
     JTextField [][] textFields = new JTextField[9][9];
     int [][] gameboardFinal = new int[9][9];
 
     gameframe(){
-        gameframe = new JFrame("Suduko Game");
-        gamePanel = new JPanel();
-        inputPanel = new JPanel();
-        controlPanel = new JPanel();
+        controlPanel();
+        inputPanel();
+        gamePanel();
+        runGame();
+        gameFrame();
+    }
 
-        controlPanel.setPreferredSize(new Dimension(controlscreen_width, screenheight));
-        controlPanel.setBackground(new Color(173, 139, 115));
-        controlPanel.setLayout(null);
-        controlPanel.setVisible(true);
-
-        inputPanel.setPreferredSize(new Dimension(gamescreen_width, screenheight-650));
-        inputPanel.setLayout(null);
-        inputPanel.setBackground(new Color(173,139,115));
-        inputPanel.setVisible(true);
-
-        gamePanel.setPreferredSize(new Dimension(gamescreen_width, screenheight));
-        gamePanel.setBackground(new Color(206, 171, 147));
-        gamePanel.setLayout(new GridLayout(9,9,2,2));
-        gamePanel.setVisible(true);
-
-        gameframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gameframe.setSize(screenwidth, screenheight);
-        gameframe.setLocationRelativeTo(null);
-        gameframe.setLayout(new BorderLayout());
-        gameframe.setResizable(false);
-
+    //Gamelogic
+    private void runGame() {
         addTextfields();
         boxStyle1(0,0);
         boxStyle2(0,5);
@@ -65,17 +53,68 @@ public class gameframe extends JFrame {
         addMouseListener();
         cursorDef();
         disableKeyInput();
+    }
+    //panels
+    private void gameFrame() {
+        gameframe = new JFrame("Suduko Game");
+        gameframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gameframe.setSize(screenwidth, screenheight);
+        gameframe.setLocationRelativeTo(null);
+        gameframe.setLayout(new BorderLayout());
+        gameframe.setResizable(false);
+
 
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
         gameframe.add(gamePanel, BorderLayout.WEST);
         gameframe.setVisible(true);
     }
+    private void gamePanel() {
+        gamePanel = new JPanel();
+        gamePanel.setPreferredSize(new Dimension(gamescreen_width, screenheight));
+        gamePanel.setBackground(new Color(206, 171, 147));
+        gamePanel.setLayout(new GridLayout(9,9,2,2));
+        gamePanel.setVisible(true);
+    }
+    private void inputPanel() {
+        inputPanel = new JPanel();
+        inputPanel.setPreferredSize(new Dimension(gamescreen_width, screenheight-650));
+        inputPanel.setLayout(null);
+        inputPanel.setBackground(new Color(173,139,115));
+        inputPanel.setVisible(true);
+    }
+    private void controlPanel() {
+        controlPanel = new JPanel();
+        livesLabel = new JLabel("LIVES");
+        livesLabel.setText("<HTML><u>LIVES</u></HTML>");
+        livesLabel.setFont(new Font("Sansserif", Font.BOLD, 30));
+        livesLabel.setForeground(Color.white);
+        livesLabel.setBounds(55,20,100,50);
+
+        livesLabelCount = new JLabel(Integer.toString(lives));
+        livesLabelCount.setText(Integer.toString(lives));
+        livesLabelCount.setFont(new Font("Sansserif", Font.BOLD, 45));
+        livesLabelCount.setForeground(Color.white);
+        livesLabelCount.setBounds((controlscreen_width/2)-20,60,100,50);
+
+        controlPanel.setPreferredSize(new Dimension(controlscreen_width, screenheight));
+        controlPanel.setBackground(new Color(173, 139, 115));
+        controlPanel.setLayout(null);
+
+        controlPanel.add(livesLabel);
+        controlPanel.add(livesLabelCount);
+        controlPanel.setVisible(true);
+    }
 
     //AddMethods
     public void addClues(){
+        //test - see if solvedboard is the same as puzzleboard
         sudukoBoardGenerator.getGenerateBoard(gameboardFinal);
+        sudukoBoardGenerator.copyArray(gameboardFinal);
         sudukoBoardGenerator.getReadyBoard(gameboardFinal);
+        sudukoSolver.printBoard(sudukoBoardGenerator.solvedBoard);
+        System.out.println();
+        sudukoSolver.printBoard(gameboardFinal);
     }
     public void addTextfields(){
         addClues();
@@ -114,7 +153,7 @@ public class gameframe extends JFrame {
                     showSelectedNums();
                     System.out.println(value);
                 }else if(!temp.isSelected()){
-                    deshowSelectedNums();
+                    unshowSelectedNums();
                     value = null;
                     enableInactiveBtn();
                 }
@@ -122,10 +161,12 @@ public class gameframe extends JFrame {
         }
     }
     public void addMouseListener(){
-        for (JTextField[] textField : textFields) {
+        for (int i = 0; i < textFields.length; i++) {
             for (int j = 0; j < textFields.length; j++) {
                 JTextField temp;
-                temp = textField[j];
+                temp = textFields[i][j];
+                int finalI = i;
+                int finalJ = j;
                 temp.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
@@ -136,10 +177,19 @@ public class gameframe extends JFrame {
                             if (!temp.isEditable()){
                                 System.out.println("clue");
                             }else{
-                                if (Objects.equals(value, "erase")){
+                                if (value.equals("erase")){
                                     value = "";
+                                    temp.setText(value);
                                 }
                                 temp.setText(value);
+                                try {
+                                    if (Integer.parseInt(temp.getText()) != sudukoBoardGenerator.solvedBoard[finalI][finalJ]){
+                                        lives--;
+                                        livesLabelCount.setText(Integer.toString(lives));
+                                    }
+                                }catch (NumberFormatException ignored){
+
+                                }
                                 temp.setForeground(Color.RED);
                             }
                         }
@@ -239,7 +289,7 @@ public class gameframe extends JFrame {
             }
         }
     }
-    public void deshowSelectedNums(){
+    public void unshowSelectedNums(){
         for (JTextField[] textField : textFields) {
             for (int j = 0; j < textFields.length; j++) {
                 if (textField[j].getText().equals(value)) {
@@ -259,6 +309,8 @@ public class gameframe extends JFrame {
 
 
     public static void main(String[] args) {
-        gameframe game = new gameframe();
+        new gameframe();
+        sudukoBoardGenerator.unavoidableSet_checker();
+        sudukoSolver.printBoard(sudukoBoardGenerator.unavoidableSetsArray);
     }
 }

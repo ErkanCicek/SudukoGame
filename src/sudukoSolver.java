@@ -1,5 +1,7 @@
+import java.util.Arrays;
+
 public class sudukoSolver {
-    public sudukoSolver() {};
+    public sudukoSolver() {}
 
     private final int col = 9;
     private final int row = 9;
@@ -59,9 +61,9 @@ public class sudukoSolver {
             }
         }
         return true;
-    }
+    } //not in use
 
-    private static void printBoard(int[][] board) {
+    public static void printBoard(int[][] board) {
         for (int row = 0; row < 9; row++) {
             if (row % 3 == 0 && row != 0) {
                 System.out.println("-----------");
@@ -71,6 +73,20 @@ public class sudukoSolver {
                     System.out.print("|");
                 }
                 System.out.print(board[row][column]);
+            }
+            System.out.println();
+        }
+    }
+    public static void printBoard(boolean[][] board) {
+        for (int row = 0; row < 9; row++) {
+            if (row % 3 == 0 && row != 0) {
+                System.out.println("-----------");
+            }
+            for (int column = 0; column < 9; column++) {
+                if (column % 3 == 0 && column != 0) {
+                    System.out.print("  |  ");
+                }
+                System.out.print(Arrays.toString(new boolean[]{board[row][column]}));
             }
             System.out.println();
         }

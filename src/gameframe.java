@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
+import java.util.Objects;
 
 public class gameframe extends JFrame {
     int screenwidth = 800;
@@ -11,6 +13,7 @@ public class gameframe extends JFrame {
     JPanel gamePanel;
     JPanel controlPanel;
     JPanel inputPanel;
+    final Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     String value = null;
 
@@ -44,6 +47,7 @@ public class gameframe extends JFrame {
         gameframe.setLocationRelativeTo(null);
         gameframe.setLayout(new BorderLayout());
         gameframe.setResizable(false);
+
         addTextfields();
         boxStyle1(0,0);
         boxStyle2(0,5);
@@ -58,6 +62,9 @@ public class gameframe extends JFrame {
         boxStyle2(5,8);
         addButton();
         addActionListenerBTN();
+        addMouseListener();
+        cursorDef();
+        disableKeyInput();
 
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
@@ -65,6 +72,7 @@ public class gameframe extends JFrame {
         gameframe.setVisible(true);
     }
 
+    //AddMethods
     public void addClues(){
         sudukoBoardGenerator.getGenerateBoard(gameboardFinal);
         sudukoBoardGenerator.getReadyBoard(gameboardFinal);
@@ -95,7 +103,6 @@ public class gameframe extends JFrame {
         buttons[0] = erase;
         inputPanel.add(erase);
     }
-
     public void addActionListenerBTN(){
         for (JToggleButton button : buttons) {
             JToggleButton temp;
@@ -104,15 +111,45 @@ public class gameframe extends JFrame {
                 if (temp.isSelected()) {
                     value = temp.getText();
                     disableInactiveBtn();
+                    showSelectedNums();
                     System.out.println(value);
                 }else if(!temp.isSelected()){
+                    deshowSelectedNums();
                     value = null;
                     enableInactiveBtn();
                 }
             });
         }
     }
+    public void addMouseListener(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                JTextField temp;
+                temp = textField[j];
+                temp.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        super.mousePressed(e);
+                        if (value == null){
+                            JOptionPane.showMessageDialog(null, "You need to choose a number below to input", "Choose a number!", JOptionPane.WARNING_MESSAGE);
+                        }else{
+                            if (!temp.isEditable()){
+                                System.out.println("clue");
+                            }else{
+                                if (Objects.equals(value, "erase")){
+                                    value = "";
+                                }
+                                temp.setText(value);
+                                temp.setForeground(Color.RED);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
 
+    //Disable/Enable
     public void disableInactiveBtn(){
         for (JToggleButton b : buttons){
             b.setEnabled(b.getText().equals(value));
@@ -123,7 +160,21 @@ public class gameframe extends JFrame {
             b.setEnabled(true);
         }
     }
+    public void disableKeyInput(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                textField[j].addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                        super.keyTyped(e);
+                        e.consume();
+                    }
+                });
+            }
+        }
+    }
 
+    //Boolean methods
     private void isZero(JTextField temp) {
         if (temp.getText().equals("0")){
             temp.setText("");
@@ -133,7 +184,7 @@ public class gameframe extends JFrame {
         return !temp.getText().equals("");
     }
 
-
+    //styling
     public void boxStyle1(int row, int col){
         int lRow = row - row % 3;
         int lCol = col - col % 3;
@@ -179,10 +230,35 @@ public class gameframe extends JFrame {
             }
         }
     }
+    public void showSelectedNums(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                if (textField[j].getText().equals(value)) {
+                    textField[j].setForeground(Color.RED);
+                }
+            }
+        }
+    }
+    public void deshowSelectedNums(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                if (textField[j].getText().equals(value)) {
+                    textField[j].setForeground(new Color(86, 45, 15));
+                }
+            }
+        }
+    }
+    public void cursorDef(){
+        for (JTextField[] textField : textFields) {
+            for (int j = 0; j < textFields.length; j++) {
+                textField[j].setCursor(cursor);
+            }
+        }
+    }
 
 
 
     public static void main(String[] args) {
-        new gameframe();
+        gameframe game = new gameframe();
     }
 }

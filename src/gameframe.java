@@ -1,9 +1,11 @@
+import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class gameframe extends JFrame {
     int screenwidth = 800;
@@ -15,6 +17,7 @@ public class gameframe extends JFrame {
     JPanel gamePanel;
     JPanel controlPanel;
     JPanel inputPanel;
+    JPanel afterGamePanel;
     JLabel livesLabel;
     JLabel livesLabelCount;
     final Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -24,9 +27,9 @@ public class gameframe extends JFrame {
 
     JToggleButton [] buttons = new JToggleButton[10];
     JTextField [][] textFields = new JTextField[9][9];
-    int [][] gameboardFinal = new int[9][9];
 
     gameframe(){
+        afterGamePanel();
         controlPanel();
         inputPanel();
         gamePanel();
@@ -67,6 +70,7 @@ public class gameframe extends JFrame {
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
         gameframe.add(gamePanel, BorderLayout.WEST);
+        gameframe.add(afterGamePanel);
         gameframe.setVisible(true);
     }
     private void gamePanel() {
@@ -85,7 +89,7 @@ public class gameframe extends JFrame {
     }
     private void controlPanel() {
         controlPanel = new JPanel();
-        livesLabel = new JLabel("LIVES");
+        livesLabel = new JLabel();
         livesLabel.setText("<HTML><u>LIVES</u></HTML>");
         livesLabel.setFont(new Font("Sansserif", Font.BOLD, 30));
         livesLabel.setForeground(Color.white);
@@ -105,22 +109,41 @@ public class gameframe extends JFrame {
         controlPanel.add(livesLabelCount);
         controlPanel.setVisible(true);
     }
+    private void afterGamePanel() {
+        afterGamePanel = new JPanel();
+        afterGamePanel.setPreferredSize(new Dimension(screenwidth,screenheight));
+        afterGamePanel.setLayout(null);
+        afterGamePanel.setBackground(Color.black);
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(new File("src/death.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert image != null;
+        JLabel imagedis = new JLabel(new ImageIcon(image));
+        imagedis.setBounds(150,100,500,500);
+        afterGamePanel.add(imagedis);
+        afterGamePanel.setVisible(false);
+    }
+
 
     //AddMethods
     public void addClues(){
-        //test - see if solvedboard is the same as puzzleboard
-        sudukoBoardGenerator.getGenerateBoard(gameboardFinal);
-        sudukoBoardGenerator.copyArray(gameboardFinal);
-        sudukoBoardGenerator.getReadyBoard(gameboardFinal);
-        sudukoSolver.printBoard(sudukoBoardGenerator.solvedBoard);
-        System.out.println();
-        sudukoSolver.printBoard(gameboardFinal);
+        sudukoBoardGenerator.getGenerateBoard(sudukoBoardGenerator.tempBoard);
+        int test = sudukoBoardGenerator.tempBoard[0][0];
+        sudukoBoardGenerator.tempBoard[0][0] = 0;
+        int counter = sudukoSolver.solver(sudukoBoardGenerator.tempBoard, sudukoSolver.counter1);
+        System.out.println(counter);
+        sudukoBoardGenerator.createSuduko(sudukoBoardGenerator.mainBoard);
+        sudukoBoardGenerator.tempBoard[0][0] = test;
+        sudukoSolver.printBoard(sudukoBoardGenerator.mainBoard);
     }
     public void addTextfields(){
         addClues();
         for (int i = 0; i < textFields.length; i++){
             for (int j = 0; j < textFields.length; j++){
-                JTextField temp = new JTextField("" + gameboardFinal[i][j]);
+                JTextField temp = new JTextField("" + sudukoBoardGenerator.mainBoard[i][j]);
                 isZero(temp);
                 textFields[i][j] = temp;
                 gamePanel.add(textFields[i][j]);
@@ -182,12 +205,22 @@ public class gameframe extends JFrame {
                                     temp.setText(value);
                                 }
                                 temp.setText(value);
+
                                 try {
-                                    if (Integer.parseInt(temp.getText()) != sudukoBoardGenerator.solvedBoard[finalI][finalJ]){
+                                    if (Integer.parseInt(temp.getText()) != sudukoBoardGenerator.tempBoard[finalI][finalJ]){
                                         lives--;
                                         livesLabelCount.setText(Integer.toString(lives));
+                                        damageTakenSound();
                                     }
                                 }catch (NumberFormatException ignored){
+
+                                }
+                                if (didPlayerLose(lives)){
+                                    gamePanel.setVisible(false);
+                                    controlPanel.setVisible(false);
+                                    inputPanel.setVisible(false);
+                                    playerLoseSound();
+                                    afterGamePanel.setVisible(true);
 
                                 }
                                 temp.setForeground(Color.RED);
@@ -198,6 +231,53 @@ public class gameframe extends JFrame {
             }
         }
     }
+
+    private void playerLoseSound() {
+        File deathsound = new File("src/8d82b5_Left_4_Dead_Bill_Death_Sound_Effect.wav");
+        AudioInputStream audioInputStream = null;
+        try {
+            audioInputStream = AudioSystem.getAudioInputStream(deathsound);
+        } catch (UnsupportedAudioFileException | IOException ex) {
+            ex.printStackTrace();
+        }
+        Clip clip = null;
+        try {
+            clip = AudioSystem.getClip();
+        } catch (LineUnavailableException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            assert clip != null;
+            clip.open(audioInputStream);
+        } catch (LineUnavailableException | IOException ex) {
+            ex.printStackTrace();
+        }
+        clip.start();
+    }
+
+    private void damageTakenSound() {
+        File deathsound = new File("src/8d82b5_SM64_Mario_Takes_Damage_Sound_Effect.wav");
+        AudioInputStream audioInputStream = null;
+        try {
+            audioInputStream = AudioSystem.getAudioInputStream(deathsound);
+        } catch (UnsupportedAudioFileException | IOException e) {
+            e.printStackTrace();
+        }
+        Clip clip = null;
+        try {
+            clip = AudioSystem.getClip();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+        try {
+            assert clip != null;
+            clip.open(audioInputStream);
+        } catch (LineUnavailableException | IOException e) {
+            e.printStackTrace();
+        }
+        clip.start();
+    }
+
 
     //Disable/Enable
     public void disableInactiveBtn(){
@@ -232,6 +312,9 @@ public class gameframe extends JFrame {
     }
     private boolean notZero(JTextField temp){
         return !temp.getText().equals("");
+    }
+    private boolean didPlayerLose(int lives){
+        return lives == 0;
     }
 
     //styling
@@ -310,7 +393,6 @@ public class gameframe extends JFrame {
 
     public static void main(String[] args) {
         new gameframe();
-        sudukoBoardGenerator.unavoidableSet_checker();
-        sudukoSolver.printBoard(sudukoBoardGenerator.unavoidableSetsArray);
+        //sudukoSolver.printBoard(sudukoBoardGenerator.unavoidableSetsArray);
     }
 }

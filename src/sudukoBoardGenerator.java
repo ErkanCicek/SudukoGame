@@ -39,7 +39,7 @@ public class sudukoBoardGenerator {
     }
 
     public static void createSuduko(int[][]board){
-        int rounds = 120;
+        int rounds = 200;
         Random r = new Random();
         int x;
         int y;

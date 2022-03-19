@@ -1,3 +1,5 @@
+package backend.sudukoBoardLogic;
+
 import java.util.*;
 
 public class sudukoBoardGenerator {

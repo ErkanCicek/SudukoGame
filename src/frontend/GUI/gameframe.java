@@ -1,3 +1,9 @@
+package frontend.GUI;
+
+import backend.soundFx.sfxclass;
+import backend.sudukoBoardLogic.sudukoBoardGenerator;
+import backend.sudukoBoardLogic.sudukoSolver;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -370,6 +376,6 @@ public class gameframe extends JFrame {
 
     public static void main(String[] args) {
         new gameframe();
-        //sudukoSolver.printBoard(sudukoBoardGenerator.unavoidableSetsArray);
+        //backend.sudukoBoardLogic.sudukoSolver.printBoard(backend.sudukoBoardLogic.sudukoBoardGenerator.unavoidableSetsArray);
     }
 }

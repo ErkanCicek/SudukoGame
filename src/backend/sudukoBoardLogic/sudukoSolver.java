@@ -1,3 +1,7 @@
+package backend.sudukoBoardLogic;
+
+import backend.sudukoBoardLogic.sudukoBoardGenerator;
+
 public class sudukoSolver {
     public sudukoSolver() {}
 

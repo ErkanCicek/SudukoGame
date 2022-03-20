@@ -48,8 +48,8 @@ public class gameframe extends JFrame {
     Thread thread = new Thread(pointSystem);
 
     gameframe(){
-        menuPanel();
         afterGamePanel();
+        menuPanel();
         controlPanel();
         inputPanel();
         gamePanel();
@@ -77,7 +77,6 @@ public class gameframe extends JFrame {
         addMouseListener();
         cursorDef();
         disableKeyInput();
-        thread.start();
     }
 
     //panels
@@ -89,11 +88,13 @@ public class gameframe extends JFrame {
         gameframe.setLayout(new BorderLayout());
         gameframe.setResizable(false);
 
+
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
         gameframe.add(gamePanel, BorderLayout.WEST);
-        gameframe.add(afterGamePanel);
+
         gameframe.add(menu);
+
         gameframe.setVisible(true);
     }
     private void gamePanel() {
@@ -177,6 +178,30 @@ public class gameframe extends JFrame {
     private void menuPanel(){
         JLabel[]labels = new JLabel[3];
         menu = new JPanel();
+        JButton quit = new JButton("QUIT");
+        JButton start = new JButton("START");
+
+        quit.setForeground(Color.black);
+        quit.setBounds(80,480,200,100);
+        quit.setFont(new Font("sanserif", Font.BOLD, 50));
+        quit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        start.setForeground(Color.black);
+        start.setBounds(470,480,250,100);
+        start.setFont(new Font("sanserif", Font.BOLD, 50));
+        start.addActionListener(e -> {
+            menu.setVisible(false);
+            gamePanel.setVisible(true);
+            controlPanel.setVisible(true);
+            inputPanel.setVisible(true);
+            thread.start();
+        });
+
 
         menu.setPreferredSize(new Dimension(screenwidth, screenheight));
         menu.setBackground(Color.black);
@@ -196,10 +221,13 @@ public class gameframe extends JFrame {
             labels[i] = new JLabel(new ImageIcon(images[i]));
         }
         labels[0].setBounds(-80,50,1000,200);
-        labels[1].setBounds(50,150,100,200);
-
+        labels[1].setBounds(355,160,100,200);
+        labels[2].setBounds(-85, 240, 1000, 200);
         menu.add(labels[0]);
         menu.add(labels[1]);
+        menu.add(labels[2]);
+        menu.add(start);
+        menu.add(quit);
         menu.setVisible(true);
     }
 
@@ -276,6 +304,7 @@ public class gameframe extends JFrame {
                 temp.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
+                        sfxclass damageTakenSound = new sfxclass("src/backend/soundFx/8d82b5_SM64_Mario_Takes_Damage_Sound_Effect.wav");
                         super.mousePressed(e);
                         if (value == null){
                             JOptionPane.showMessageDialog(null, "You need to choose a number below to input", "Choose a number!", JOptionPane.WARNING_MESSAGE);
@@ -291,7 +320,6 @@ public class gameframe extends JFrame {
                                 try {
                                     if (Integer.parseInt(temp.getText()) != sudukoBoardGenerator.tempBoard[finalI][finalJ]){
                                         lives--;
-                                        sfxclass damageTakenSound = new sfxclass("src/backend/soundFx/8d82b5_SM64_Mario_Takes_Damage_Sound_Effect.wav");
                                         damageTakenSound.playSound();
                                         //livesLabelCount.setText(Integer.toString(lives));
                                         healthbar.setValue(lives);
@@ -318,8 +346,7 @@ public class gameframe extends JFrame {
                                     gamePanel.setVisible(false);
                                     controlPanel.setVisible(false);
                                     inputPanel.setVisible(false);
-                                    sfxclass deathSound = new sfxclass("src/backend/soundFx/8d82b5_Left_4_Dead_Bill_Death_Sound_Effect.wav");
-                                    deathSound.playSound();
+                                    gameframe.add(afterGamePanel);
                                     afterGamePanel.setVisible(true);
 
                                 }
@@ -367,6 +394,10 @@ public class gameframe extends JFrame {
         return !temp.getText().equals("");
     }
     private boolean didPlayerLose(int lives){
+        sfxclass deathSound = new sfxclass("src/backend/soundFx/8d82b5_Left_4_Dead_Bill_Death_Sound_Effect.wav");
+        if (lives == 0){
+            deathSound.playSound();
+        }
         return lives == 0;
     }
 

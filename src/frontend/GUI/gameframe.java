@@ -177,9 +177,20 @@ public class gameframe extends JFrame {
     private void menuPanel(){
         menu = new JPanel();
 
-        
+        menu.setPreferredSize(new Dimension(screenwidth, screenheight));
         menu.setBackground(Color.black);
         menu.setLayout(null);
+
+        BufferedImage image = null;
+        try{
+            image = ImageIO.read(new File("src/frontend/pictures/startpagelogo.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert image != null;
+        JLabel imagedis = new JLabel(new ImageIcon(image));
+        imagedis.setBounds(50,100,1000,500);
+        menu.add(imagedis);
         menu.setVisible(true);
     }
 

@@ -169,28 +169,37 @@ public class gameframe extends JFrame {
             e.printStackTrace();
         }
         assert image != null;
-        JLabel imagedis = new JLabel(new ImageIcon(image));
-        imagedis.setBounds(150,100,500,500);
-        afterGamePanel.add(imagedis);
+        JLabel imagelabel = new JLabel(new ImageIcon(image));
+        imagelabel.setBounds(150,100,500,500);
+        afterGamePanel.add(imagelabel);
         afterGamePanel.setVisible(false);
     }
     private void menuPanel(){
+        JLabel[]labels = new JLabel[3];
         menu = new JPanel();
 
         menu.setPreferredSize(new Dimension(screenwidth, screenheight));
         menu.setBackground(Color.black);
         menu.setLayout(null);
 
-        BufferedImage image = null;
+        BufferedImage[]images = new BufferedImage[3];
         try{
-            image = ImageIO.read(new File("src/frontend/pictures/startpagelogo.png"));
-        } catch (IOException e) {
+            assert false;
+            images[0] = ImageIO.read(new File("src/frontend/pictures/name1.png"));
+            images[1] = ImageIO.read(new File("src/frontend/pictures/name2.png"));
+            images[2] = ImageIO.read(new File("src/frontend/pictures/name3.png"));
+        }catch (IOException e){
             e.printStackTrace();
         }
-        assert image != null;
-        JLabel imagedis = new JLabel(new ImageIcon(image));
-        imagedis.setBounds(50,100,1000,500);
-        menu.add(imagedis);
+        for (int i = 0; i < images.length; i++){
+            assert images[i] != null;
+            labels[i] = new JLabel(new ImageIcon(images[i]));
+        }
+        labels[0].setBounds(-80,50,1000,200);
+        labels[1].setBounds(50,150,100,200);
+
+        menu.add(labels[0]);
+        menu.add(labels[1]);
         menu.setVisible(true);
     }
 

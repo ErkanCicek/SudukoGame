@@ -176,17 +176,8 @@ public class gameframe extends JFrame {
     }
     private void menuPanel(){
         menu = new JPanel();
-        JButton startGame = new JButton("Start");
-        startGame.setForeground(Color.WHITE);
-        startGame.setFont(new Font("Lemon Chicken", Font.BOLD, 50));
-        startGame.setBounds(425,425, 50,50);
-        JButton quitGame = new JButton("QUIT");
-        quitGame.setForeground(Color.white);
-        quitGame.setFont(new Font("Lemon Chicken", Font.BOLD, 50));
-        quitGame.setBounds(425, 400, 50,50);
 
-        menu.add(quitGame);
-        menu.add(startGame);
+        
         menu.setBackground(Color.black);
         menu.setLayout(null);
         menu.setVisible(true);

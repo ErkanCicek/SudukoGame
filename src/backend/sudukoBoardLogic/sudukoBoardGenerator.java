@@ -10,7 +10,7 @@ public class sudukoBoardGenerator {
     private static final ArrayList<Integer> values = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
     public static int[][]mainBoard = new int[9][9];
     public static int[][]tempBoard = new int[9][9];
-    public static boolean[][]unavoidableSetsArray = new boolean[9][9];
+    //public static boolean[][]unavoidableSetsArray = new boolean[9][9];
     public static int count = 0;
 
     private static void randomize(){
@@ -18,7 +18,7 @@ public class sudukoBoardGenerator {
     }
     private static boolean generateSolvedGrid(int[][]board){
         randomize();
-        Arrays.stream(unavoidableSetsArray).forEach(i -> Arrays.fill(i,false));
+        //Arrays.stream(unavoidableSetsArray).forEach(i -> Arrays.fill(i,false));
         for (int i = 0; i < row; i++){
             for (int j = 0; j < col; j++){
                 if (board[i][j] == 0){

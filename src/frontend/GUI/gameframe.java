@@ -1,19 +1,19 @@
 package frontend.GUI;
 
+import backend.pointsystem.pointSystem;
 import backend.soundFx.sfxclass;
 import backend.sudukoBoardLogic.sudukoBoardGenerator;
 import backend.sudukoBoardLogic.sudukoSolver;
+import com.sun.source.tree.BreakTree;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class gameframe extends JFrame {
     int screenwidth = 850;
@@ -22,22 +22,33 @@ public class gameframe extends JFrame {
     int controlscreen_width = screenwidth - gamescreen_width - 10;
 
     JFrame gameframe;
+    JPanel menu;
     JPanel gamePanel;
     JPanel controlPanel;
     JPanel inputPanel;
     JPanel afterGamePanel;
     JLabel livesLabel;
+    JLabel scoreLabel;
+    JLabel scoreLabelCount;
     //JLabel livesLabelCount;
     JProgressBar healthbar;
     final Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     String value = null;
     int lives = 3;
+    int score = 50;
+    int tempScore = 0;
+    boolean isGameRunning = true;
 
     JToggleButton [] buttons = new JToggleButton[10];
     JTextField [][] textFields = new JTextField[9][9];
+    boolean[][]wasEmptyBeforeArray = new boolean[9][9];
+
+    pointSystem pointSystem = new pointSystem(score, isGameRunning);
+    Thread thread = new Thread(pointSystem);
 
     gameframe(){
+        menuPanel();
         afterGamePanel();
         controlPanel();
         inputPanel();
@@ -48,6 +59,7 @@ public class gameframe extends JFrame {
 
     //Gamelogic
     private void runGame() {
+        Arrays.stream(wasEmptyBeforeArray).forEach(booleans -> Arrays.fill(booleans, true));
         addTextfields();
         boxStyle1(0,0);
         boxStyle2(0,5);
@@ -65,6 +77,7 @@ public class gameframe extends JFrame {
         addMouseListener();
         cursorDef();
         disableKeyInput();
+        thread.start();
     }
 
     //panels
@@ -76,11 +89,11 @@ public class gameframe extends JFrame {
         gameframe.setLayout(new BorderLayout());
         gameframe.setResizable(false);
 
-
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
         gameframe.add(gamePanel, BorderLayout.WEST);
         gameframe.add(afterGamePanel);
+        gameframe.add(menu);
         gameframe.setVisible(true);
     }
     private void gamePanel() {
@@ -88,14 +101,14 @@ public class gameframe extends JFrame {
         gamePanel.setPreferredSize(new Dimension(gamescreen_width, screenheight));
         gamePanel.setBackground(new Color(206, 171, 147));
         gamePanel.setLayout(new GridLayout(9,9,2,2));
-        gamePanel.setVisible(true);
+        gamePanel.setVisible(false);
     }
     private void inputPanel() {
         inputPanel = new JPanel();
         inputPanel.setPreferredSize(new Dimension(gamescreen_width, screenheight-650));
         inputPanel.setLayout(null);
         inputPanel.setBackground(new Color(173,139,115));
-        inputPanel.setVisible(true);
+        inputPanel.setVisible(false);
     }
     private void controlPanel() {
         controlPanel = new JPanel();
@@ -112,6 +125,18 @@ public class gameframe extends JFrame {
         healthbar.setBackground(Color.red);
         healthbar.setForeground(Color.green);
 
+        scoreLabel = new JLabel();
+        scoreLabel.setText("<HTML><u>SCORE</u></HTML>");
+        scoreLabel.setFont(new Font("Sansserif", Font.BOLD, 27));
+        scoreLabel.setForeground(Color.white);
+        scoreLabel.setBounds(55, 200, 170, 50);
+
+        scoreLabelCount = new JLabel("0");
+        scoreLabelCount.setFont(new Font("Sansserif", Font.BOLD, 45));
+        scoreLabelCount.setForeground(Color.white);
+        scoreLabelCount.setBounds(90,200, 200,200);
+
+
         //it was a counter that counted down from 3 to 0 based on lives we had
         /*livesLabelCount = new JLabel(Integer.toString(lives));
         livesLabelCount.setText(Integer.toString(lives));
@@ -126,8 +151,11 @@ public class gameframe extends JFrame {
 
         controlPanel.add(livesLabel);
         controlPanel.add(healthbar);
+        controlPanel.add(scoreLabel);
+        controlPanel.add(scoreLabelCount);
+
         //controlPanel.add(livesLabelCount);
-        controlPanel.setVisible(true);
+        controlPanel.setVisible(false);
     }
     private void afterGamePanel() {
         afterGamePanel = new JPanel();
@@ -136,7 +164,7 @@ public class gameframe extends JFrame {
         afterGamePanel.setBackground(Color.black);
         BufferedImage image = null;
         try {
-            image = ImageIO.read(new File("src/death.png"));
+            image = ImageIO.read(new File("src/frontend/pictures/death.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -145,6 +173,23 @@ public class gameframe extends JFrame {
         imagedis.setBounds(150,100,500,500);
         afterGamePanel.add(imagedis);
         afterGamePanel.setVisible(false);
+    }
+    private void menuPanel(){
+        menu = new JPanel();
+        JButton startGame = new JButton("Start");
+        startGame.setForeground(Color.WHITE);
+        startGame.setFont(new Font("Lemon Chicken", Font.BOLD, 50));
+        startGame.setBounds(425,425, 50,50);
+        JButton quitGame = new JButton("QUIT");
+        quitGame.setForeground(Color.white);
+        quitGame.setFont(new Font("Lemon Chicken", Font.BOLD, 50));
+        quitGame.setBounds(425, 400, 50,50);
+
+        menu.add(quitGame);
+        menu.add(startGame);
+        menu.setBackground(Color.black);
+        menu.setLayout(null);
+        menu.setVisible(true);
     }
 
 
@@ -232,14 +277,28 @@ public class gameframe extends JFrame {
                                     temp.setText(value);
                                 }
                                 temp.setText(value);
-
                                 try {
                                     if (Integer.parseInt(temp.getText()) != sudukoBoardGenerator.tempBoard[finalI][finalJ]){
                                         lives--;
-                                        sfxclass damageTakenSound = new sfxclass("src/8d82b5_SM64_Mario_Takes_Damage_Sound_Effect.wav");
+                                        sfxclass damageTakenSound = new sfxclass("src/backend/soundFx/8d82b5_SM64_Mario_Takes_Damage_Sound_Effect.wav");
                                         damageTakenSound.playSound();
                                         //livesLabelCount.setText(Integer.toString(lives));
                                         healthbar.setValue(lives);
+                                    }else{
+                                        if (wasEmptyBeforeArray[finalI][finalJ]){
+                                            wasEmptyBeforeArray[finalI][finalJ] = false;
+                                            score = pointSystem.score;
+                                            tempScore = tempScore + score;
+                                            System.out.println(tempScore);
+                                            scoreLabelCount.setText(Integer.toString(tempScore));
+                                            thread.interrupt();
+                                            score = 50; //reset the value to 50 (base score)
+                                            pointSystem = new pointSystem(score, isGameRunning);
+                                            thread = new Thread(pointSystem);
+                                            thread.start();
+                                        }else{
+                                            System.out.println("you have already entered here");
+                                        }
                                     }
                                 }catch (NumberFormatException ignored){
 
@@ -248,7 +307,7 @@ public class gameframe extends JFrame {
                                     gamePanel.setVisible(false);
                                     controlPanel.setVisible(false);
                                     inputPanel.setVisible(false);
-                                    sfxclass deathSound = new sfxclass("src/8d82b5_Left_4_Dead_Bill_Death_Sound_Effect.wav");
+                                    sfxclass deathSound = new sfxclass("src/backend/soundFx/8d82b5_Left_4_Dead_Bill_Death_Sound_Effect.wav");
                                     deathSound.playSound();
                                     afterGamePanel.setVisible(true);
 
@@ -376,6 +435,5 @@ public class gameframe extends JFrame {
 
     public static void main(String[] args) {
         new gameframe();
-        //backend.sudukoBoardLogic.sudukoSolver.printBoard(backend.sudukoBoardLogic.sudukoBoardGenerator.unavoidableSetsArray);
     }
 }

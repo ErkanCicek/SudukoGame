@@ -1,36 +1,57 @@
 package backend.pointsystem;
 
+import java.util.Scanner;
+
 public class pointSystem implements Runnable{
-    double multiplier;
+    public int score;
     boolean isGameRunning;
 
-    public pointSystem(double multiplier, boolean isGameRunning) {
-        this.multiplier = multiplier;
+    public pointSystem(int score, boolean isGameRunning) {
+        this.score = score;
         this.isGameRunning = isGameRunning;
     }
 
-    private void change(){
-        this.multiplier = this.multiplier - 0.5;
-        System.out.println(this.multiplier);
+    private int change(){
+        if (this.score == 5){
+            System.out.println("");
+            return this.score;
+        }else{
+            this.score = this.score - 5;
+            return this.score;
+        }
     }
 
     @Override
     public void run() {
         try {
             while (isGameRunning){
-                change();
-                Thread.sleep(15000);
+                if (Thread.interrupted()){
+                    break;
+                }else {
+                    change();
+                    Thread.sleep(15000);
+                }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println();
         }
     }
 
-    public static void main(String[] args) {
-        double multi = 4.5;
-        boolean running = true;
-        pointSystem test = new pointSystem(multi, running);
+    public static void main(String[] args) throws InterruptedException {
+        boolean gamerunning = true;
+        int score = 45;
+        pointSystem test = new pointSystem(score, gamerunning);
         Thread thread = new Thread(test);
         thread.start();
+        Scanner scanner = new Scanner(System.in);
+        int x = scanner.nextInt();
+        score = test.score;
+        System.out.println(score);
+        if (x == 1){
+            thread.interrupt();
+            test = new pointSystem(score, gamerunning);
+            thread = new Thread(test);
+            thread.start();
+        }
     }
 }

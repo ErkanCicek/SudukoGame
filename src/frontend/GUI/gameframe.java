@@ -4,6 +4,7 @@ import backend.pointsystem.pointSystem;
 import backend.soundFx.sfxclass;
 import backend.sudukoBoardLogic.sudukoBoardGenerator;
 import backend.sudukoBoardLogic.sudukoSolver;
+import com.sun.source.tree.BreakTree;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -47,6 +48,7 @@ public class gameframe extends JFrame {
     Thread thread = new Thread(pointSystem);
 
     gameframe(){
+        menuPanel();
         afterGamePanel();
         controlPanel();
         inputPanel();
@@ -87,11 +89,11 @@ public class gameframe extends JFrame {
         gameframe.setLayout(new BorderLayout());
         gameframe.setResizable(false);
 
-
         gameframe.add(controlPanel, BorderLayout.EAST);
         gameframe.add(inputPanel, BorderLayout.SOUTH);
         gameframe.add(gamePanel, BorderLayout.WEST);
         gameframe.add(afterGamePanel);
+        gameframe.add(menu);
         gameframe.setVisible(true);
     }
     private void gamePanel() {
@@ -99,14 +101,14 @@ public class gameframe extends JFrame {
         gamePanel.setPreferredSize(new Dimension(gamescreen_width, screenheight));
         gamePanel.setBackground(new Color(206, 171, 147));
         gamePanel.setLayout(new GridLayout(9,9,2,2));
-        gamePanel.setVisible(true);
+        gamePanel.setVisible(false);
     }
     private void inputPanel() {
         inputPanel = new JPanel();
         inputPanel.setPreferredSize(new Dimension(gamescreen_width, screenheight-650));
         inputPanel.setLayout(null);
         inputPanel.setBackground(new Color(173,139,115));
-        inputPanel.setVisible(true);
+        inputPanel.setVisible(false);
     }
     private void controlPanel() {
         controlPanel = new JPanel();
@@ -153,7 +155,7 @@ public class gameframe extends JFrame {
         controlPanel.add(scoreLabelCount);
 
         //controlPanel.add(livesLabelCount);
-        controlPanel.setVisible(true);
+        controlPanel.setVisible(false);
     }
     private void afterGamePanel() {
         afterGamePanel = new JPanel();
@@ -173,16 +175,21 @@ public class gameframe extends JFrame {
         afterGamePanel.setVisible(false);
     }
     private void menuPanel(){
-        JButton startGame = new JButton("Start");
-        JButton quitGame = new JButton("QUIT");
-        startGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
         menu = new JPanel();
+        JButton startGame = new JButton("Start");
+        startGame.setForeground(Color.WHITE);
+        startGame.setFont(new Font("Lemon Chicken", Font.BOLD, 50));
+        startGame.setBounds(425,425, 50,50);
+        JButton quitGame = new JButton("QUIT");
+        quitGame.setForeground(Color.white);
+        quitGame.setFont(new Font("Lemon Chicken", Font.BOLD, 50));
+        quitGame.setBounds(425, 400, 50,50);
+
         menu.add(quitGame);
+        menu.add(startGame);
+        menu.setBackground(Color.black);
+        menu.setLayout(null);
+        menu.setVisible(true);
     }
 
 

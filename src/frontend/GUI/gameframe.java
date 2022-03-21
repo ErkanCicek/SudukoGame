@@ -32,6 +32,7 @@ public class gameframe extends JFrame {
     JLabel livesLabel;
     JLabel scoreLabel;
     JLabel scoreLabelCount;
+    JLabel finalScoreLabel;
     //JLabel livesLabelCount;
     JProgressBar healthbar;
     final Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -96,7 +97,6 @@ public class gameframe extends JFrame {
         gameframe.add(gamePanel, BorderLayout.WEST);
 
         gameframe.add(menu);
-
         gameframe.setVisible(true);
     }
     private void gamePanel() {
@@ -117,7 +117,7 @@ public class gameframe extends JFrame {
         controlPanel = new JPanel();
         livesLabel = new JLabel();
         livesLabel.setText("<HTML><u>HEALTH</u></HTML>");
-        livesLabel.setFont(new Font("Sansserif", Font.BOLD, 27));
+        livesLabel.setFont(new Font("Sanserif", Font.BOLD, 27));
         livesLabel.setForeground(Color.white);
         livesLabel.setBounds(55,20,110,50);
 
@@ -130,12 +130,12 @@ public class gameframe extends JFrame {
 
         scoreLabel = new JLabel();
         scoreLabel.setText("<HTML><u>SCORE</u></HTML>");
-        scoreLabel.setFont(new Font("Sansserif", Font.BOLD, 27));
+        scoreLabel.setFont(new Font("Sanserif", Font.BOLD, 27));
         scoreLabel.setForeground(Color.white);
         scoreLabel.setBounds(55, 200, 170, 50);
 
         scoreLabelCount = new JLabel("0");
-        scoreLabelCount.setFont(new Font("Sansserif", Font.BOLD, 45));
+        scoreLabelCount.setFont(new Font("Sanserif", Font.BOLD, 45));
         scoreLabelCount.setForeground(Color.white);
         scoreLabelCount.setBounds(90,200, 200,200);
 
@@ -143,7 +143,7 @@ public class gameframe extends JFrame {
         //it was a counter that counted down from 3 to 0 based on lives we had
         /*livesLabelCount = new JLabel(Integer.toString(lives));
         livesLabelCount.setText(Integer.toString(lives));
-        livesLabelCount.setFont(new Font("Sansserif", Font.BOLD, 45));
+        livesLabelCount.setFont(new Font("Sanserif", Font.BOLD, 45));
         livesLabelCount.setForeground(Color.white);
         livesLabelCount.setBounds((controlscreen_width/2)-20,60,100,50);
          */
@@ -162,6 +162,12 @@ public class gameframe extends JFrame {
     }
     private void afterGamePanel() {
         afterGamePanel = new JPanel();
+        finalScoreLabel = new JLabel();
+        finalScoreLabel.setForeground(Color.white);
+        finalScoreLabel.setBackground(Color.white);
+        finalScoreLabel.setBounds(300, 250, 400,200);
+        finalScoreLabel.setText("");
+        finalScoreLabel.setFont(new Font("sanserif", Font.BOLD, 50));
         afterGamePanel.setPreferredSize(new Dimension(screenwidth,screenheight));
         afterGamePanel.setLayout(null);
         afterGamePanel.setBackground(Color.black);
@@ -173,8 +179,9 @@ public class gameframe extends JFrame {
         }
         assert image != null;
         JLabel imagelabel = new JLabel(new ImageIcon(image));
-        imagelabel.setBounds(150,100,500,500);
+        imagelabel.setBounds(150,-50,500,500);
         afterGamePanel.add(imagelabel);
+        afterGamePanel.add(finalScoreLabel);
         afterGamePanel.setVisible(false);
     }
     private void menuPanel(){
@@ -344,6 +351,7 @@ public class gameframe extends JFrame {
                                     controlPanel.setVisible(false);
                                     inputPanel.setVisible(false);
                                     gameframe.add(afterGamePanel);
+                                    finalScoreLabel.setText(Integer.toString(tempScore) + " POINTS");
                                     afterGamePanel.setVisible(true);
 
                                 }

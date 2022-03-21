@@ -36,7 +36,7 @@ public class gameframe extends JFrame {
 
     String value = null;
     int lives = 3;
-    int score = 50;
+    int score = 45;
     int tempScore = 0;
     boolean isGameRunning = true;
 
@@ -253,7 +253,6 @@ public class gameframe extends JFrame {
             gamePanel.setVisible(true);
             controlPanel.setVisible(true);
             inputPanel.setVisible(true);
-            thread.start();
         });
 
 

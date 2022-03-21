@@ -4,12 +4,14 @@ import backend.pointsystem.pointSystem;
 import backend.soundFx.sfxclass;
 import backend.sudukoBoardLogic.sudukoBoardGenerator;
 import backend.sudukoBoardLogic.sudukoSolver;
-import com.sun.source.tree.BreakTree;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -184,12 +186,7 @@ public class gameframe extends JFrame {
         quit.setForeground(Color.black);
         quit.setBounds(80,480,200,100);
         quit.setFont(new Font("sanserif", Font.BOLD, 50));
-        quit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        quit.addActionListener(e -> System.exit(0));
 
         start.setForeground(Color.black);
         start.setBounds(470,480,250,100);

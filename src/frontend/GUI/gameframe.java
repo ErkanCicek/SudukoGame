@@ -4,7 +4,6 @@ import backend.pointsystem.pointSystem;
 import backend.soundFx.sfxclass;
 import backend.sudukoBoardLogic.sudukoBoardGenerator;
 import backend.sudukoBoardLogic.sudukoSolver;
-import com.sun.source.tree.BreakTree;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -30,13 +29,14 @@ public class gameframe extends JFrame {
     JLabel livesLabel;
     JLabel scoreLabel;
     JLabel scoreLabelCount;
+    JLabel finalScoreLabel;
     //JLabel livesLabelCount;
     JProgressBar healthbar;
     final Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     String value = null;
     int lives = 3;
-    int score = 50;
+    int score = 45;
     int tempScore = 0;
     boolean isGameRunning = true;
 
@@ -55,6 +55,20 @@ public class gameframe extends JFrame {
         gamePanel();
         runGame();
         gameFrame();
+    }
+
+    gameframe(int x){
+        if(x == 1){
+            afterGamePanel();
+            controlPanel();
+            controlPanel.setVisible(true);
+            inputPanel();
+            inputPanel.setVisible(true);
+            gamePanel();
+            gamePanel.setVisible(true);
+            runGame();
+            gameFrameRerun();
+        }
     }
 
     //Gamelogic
@@ -94,9 +108,25 @@ public class gameframe extends JFrame {
         gameframe.add(gamePanel, BorderLayout.WEST);
 
         gameframe.add(menu);
+        gameframe.setVisible(true);
+    }
+
+    private void gameFrameRerun(){
+        gameframe = new JFrame("Suduko Game");
+        gameframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gameframe.setSize(screenwidth, screenheight);
+        gameframe.setLocationRelativeTo(null);
+        gameframe.setLayout(new BorderLayout());
+        gameframe.setResizable(false);
+
+
+        gameframe.add(controlPanel, BorderLayout.EAST);
+        gameframe.add(inputPanel, BorderLayout.SOUTH);
+        gameframe.add(gamePanel, BorderLayout.WEST);
 
         gameframe.setVisible(true);
     }
+
     private void gamePanel() {
         gamePanel = new JPanel();
         gamePanel.setPreferredSize(new Dimension(gamescreen_width, screenheight));
@@ -115,7 +145,7 @@ public class gameframe extends JFrame {
         controlPanel = new JPanel();
         livesLabel = new JLabel();
         livesLabel.setText("<HTML><u>HEALTH</u></HTML>");
-        livesLabel.setFont(new Font("Sansserif", Font.BOLD, 27));
+        livesLabel.setFont(new Font("Sanserif", Font.BOLD, 27));
         livesLabel.setForeground(Color.white);
         livesLabel.setBounds(55,20,110,50);
 
@@ -128,12 +158,12 @@ public class gameframe extends JFrame {
 
         scoreLabel = new JLabel();
         scoreLabel.setText("<HTML><u>SCORE</u></HTML>");
-        scoreLabel.setFont(new Font("Sansserif", Font.BOLD, 27));
+        scoreLabel.setFont(new Font("Sanserif", Font.BOLD, 27));
         scoreLabel.setForeground(Color.white);
         scoreLabel.setBounds(55, 200, 170, 50);
 
         scoreLabelCount = new JLabel("0");
-        scoreLabelCount.setFont(new Font("Sansserif", Font.BOLD, 45));
+        scoreLabelCount.setFont(new Font("Sanserif", Font.BOLD, 45));
         scoreLabelCount.setForeground(Color.white);
         scoreLabelCount.setBounds(90,200, 200,200);
 
@@ -141,7 +171,7 @@ public class gameframe extends JFrame {
         //it was a counter that counted down from 3 to 0 based on lives we had
         /*livesLabelCount = new JLabel(Integer.toString(lives));
         livesLabelCount.setText(Integer.toString(lives));
-        livesLabelCount.setFont(new Font("Sansserif", Font.BOLD, 45));
+        livesLabelCount.setFont(new Font("Sanserif", Font.BOLD, 45));
         livesLabelCount.setForeground(Color.white);
         livesLabelCount.setBounds((controlscreen_width/2)-20,60,100,50);
          */
@@ -160,6 +190,32 @@ public class gameframe extends JFrame {
     }
     private void afterGamePanel() {
         afterGamePanel = new JPanel();
+        JButton quit = new JButton("QUIT");
+        JButton retry = new JButton("Try again");
+        quit.addActionListener(e -> System.exit(0));
+        quit.setForeground(Color.black);
+        quit.setFont(new Font("sanserif", Font.BOLD, 50));
+        quit.setBounds(80,480,200,100);
+
+        retry.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new gameframe(1);
+                gameframe.dispose();
+                gamePanel.setVisible(true);
+                controlPanel.setVisible(true);
+                inputPanel.setVisible(true);
+            }
+        });
+        retry.setForeground(Color.black);
+        retry.setFont(new Font("sanserif", Font.BOLD, 50));
+        retry.setBounds(470,480,250,100);
+        finalScoreLabel = new JLabel();
+        finalScoreLabel.setForeground(Color.white);
+        finalScoreLabel.setBackground(Color.white);
+        finalScoreLabel.setBounds(300, 250, 400,200);
+        finalScoreLabel.setText("");
+        finalScoreLabel.setFont(new Font("sanserif", Font.BOLD, 50));
         afterGamePanel.setPreferredSize(new Dimension(screenwidth,screenheight));
         afterGamePanel.setLayout(null);
         afterGamePanel.setBackground(Color.black);
@@ -171,8 +227,11 @@ public class gameframe extends JFrame {
         }
         assert image != null;
         JLabel imagelabel = new JLabel(new ImageIcon(image));
-        imagelabel.setBounds(150,100,500,500);
+        imagelabel.setBounds(150,-50,500,500);
         afterGamePanel.add(imagelabel);
+        afterGamePanel.add(finalScoreLabel);
+        afterGamePanel.add(quit);
+        afterGamePanel.add(retry);
         afterGamePanel.setVisible(false);
     }
     private void menuPanel(){
@@ -184,12 +243,7 @@ public class gameframe extends JFrame {
         quit.setForeground(Color.black);
         quit.setBounds(80,480,200,100);
         quit.setFont(new Font("sanserif", Font.BOLD, 50));
-        quit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        quit.addActionListener(e -> System.exit(0));
 
         start.setForeground(Color.black);
         start.setBounds(470,480,250,100);
@@ -199,7 +253,6 @@ public class gameframe extends JFrame {
             gamePanel.setVisible(true);
             controlPanel.setVisible(true);
             inputPanel.setVisible(true);
-            thread.start();
         });
 
 
@@ -347,6 +400,7 @@ public class gameframe extends JFrame {
                                     controlPanel.setVisible(false);
                                     inputPanel.setVisible(false);
                                     gameframe.add(afterGamePanel);
+                                    finalScoreLabel.setText(Integer.toString(tempScore) + " POINTS");
                                     afterGamePanel.setVisible(true);
 
                                 }

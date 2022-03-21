@@ -8,10 +8,7 @@ import backend.sudukoBoardLogic.sudukoSolver;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +57,20 @@ public class gameframe extends JFrame {
         gameFrame();
     }
 
+    gameframe(int x){
+        if(x == 1){
+            afterGamePanel();
+            controlPanel();
+            controlPanel.setVisible(true);
+            inputPanel();
+            inputPanel.setVisible(true);
+            gamePanel();
+            gamePanel.setVisible(true);
+            runGame();
+            gameFrameRerun();
+        }
+    }
+
     //Gamelogic
     private void runGame() {
         Arrays.stream(wasEmptyBeforeArray).forEach(booleans -> Arrays.fill(booleans, true));
@@ -99,6 +110,23 @@ public class gameframe extends JFrame {
         gameframe.add(menu);
         gameframe.setVisible(true);
     }
+
+    private void gameFrameRerun(){
+        gameframe = new JFrame("Suduko Game");
+        gameframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gameframe.setSize(screenwidth, screenheight);
+        gameframe.setLocationRelativeTo(null);
+        gameframe.setLayout(new BorderLayout());
+        gameframe.setResizable(false);
+
+
+        gameframe.add(controlPanel, BorderLayout.EAST);
+        gameframe.add(inputPanel, BorderLayout.SOUTH);
+        gameframe.add(gamePanel, BorderLayout.WEST);
+
+        gameframe.setVisible(true);
+    }
+
     private void gamePanel() {
         gamePanel = new JPanel();
         gamePanel.setPreferredSize(new Dimension(gamescreen_width, screenheight));
@@ -162,6 +190,26 @@ public class gameframe extends JFrame {
     }
     private void afterGamePanel() {
         afterGamePanel = new JPanel();
+        JButton quit = new JButton("QUIT");
+        JButton retry = new JButton("Try again");
+        quit.addActionListener(e -> System.exit(0));
+        quit.setForeground(Color.black);
+        quit.setFont(new Font("sanserif", Font.BOLD, 50));
+        quit.setBounds(80,480,200,100);
+
+        retry.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new gameframe(1);
+                gameframe.dispose();
+                gamePanel.setVisible(true);
+                controlPanel.setVisible(true);
+                inputPanel.setVisible(true);
+            }
+        });
+        retry.setForeground(Color.black);
+        retry.setFont(new Font("sanserif", Font.BOLD, 50));
+        retry.setBounds(470,480,250,100);
         finalScoreLabel = new JLabel();
         finalScoreLabel.setForeground(Color.white);
         finalScoreLabel.setBackground(Color.white);
@@ -182,6 +230,8 @@ public class gameframe extends JFrame {
         imagelabel.setBounds(150,-50,500,500);
         afterGamePanel.add(imagelabel);
         afterGamePanel.add(finalScoreLabel);
+        afterGamePanel.add(quit);
+        afterGamePanel.add(retry);
         afterGamePanel.setVisible(false);
     }
     private void menuPanel(){

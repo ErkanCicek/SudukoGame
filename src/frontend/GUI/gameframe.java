@@ -26,6 +26,7 @@ public class gameframe extends JFrame {
     JPanel controlPanel;
     JPanel inputPanel;
     JPanel afterGamePanel;
+    JPanel afterGamePanelWin;
     JLabel livesLabel;
     JLabel scoreLabel;
     JLabel scoreLabelCount;
@@ -39,6 +40,7 @@ public class gameframe extends JFrame {
     int score = 45;
     int tempScore = 0;
     boolean isGameRunning = true;
+    int didPlayerWinVariable = 0;
 
     JToggleButton [] buttons = new JToggleButton[10];
     JTextField [][] textFields = new JTextField[9][9];
@@ -49,6 +51,7 @@ public class gameframe extends JFrame {
 
     gameframe(){
         afterGamePanel();
+        afterGamePanelWin();
         menuPanel();
         controlPanel();
         inputPanel();
@@ -60,6 +63,7 @@ public class gameframe extends JFrame {
     gameframe(int x){
         if(x == 1){
             afterGamePanel();
+            afterGamePanelWin();
             controlPanel();
             controlPanel.setVisible(true);
             inputPanel();
@@ -189,13 +193,59 @@ public class gameframe extends JFrame {
         controlPanel.setVisible(false);
     }
     private void afterGamePanel() {
-        afterGamePanel = new JPanel();
+            JButton retry = new JButton("New Game");
+            afterGamePanel = new JPanel();
+            JButton quit = new JButton("QUIT");
+            quit.addActionListener(e -> System.exit(0));
+            quit.setForeground(Color.black);
+            quit.setFont(new Font("sanserif", Font.BOLD, 50));
+            quit.setBounds(80,480,200,100);
+
+            retry.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new gameframe(1);
+                    gameframe.dispose();
+                    gamePanel.setVisible(true);
+                    controlPanel.setVisible(true);
+                    inputPanel.setVisible(true);
+                }
+            });
+            retry.setForeground(Color.black);
+            retry.setFont(new Font("sanserif", Font.BOLD, 50));
+            retry.setBounds(470,480,300,100);
+            finalScoreLabel = new JLabel();
+            finalScoreLabel.setForeground(Color.white);
+            finalScoreLabel.setBackground(Color.white);
+            finalScoreLabel.setBounds(300, 250, 400,200);
+            finalScoreLabel.setText("");
+            finalScoreLabel.setFont(new Font("sanserif", Font.BOLD, 50));
+            afterGamePanel.setPreferredSize(new Dimension(screenwidth,screenheight));
+            afterGamePanel.setLayout(null);
+            afterGamePanel.setBackground(Color.black);
+            BufferedImage image = null;
+            try {
+                image = ImageIO.read(new File("src/frontend/pictures/death.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            assert image != null;
+            JLabel imagelabel = new JLabel(new ImageIcon(image));
+            imagelabel.setBounds(150,-50,500,500);
+            afterGamePanel.add(imagelabel);
+            afterGamePanel.add(finalScoreLabel);
+            afterGamePanel.add(quit);
+            afterGamePanel.add(retry);
+            afterGamePanel.setVisible(false);
+    }
+    private void afterGamePanelWin() {
+        JButton retry = new JButton("New Game");
+        afterGamePanelWin = new JPanel();
         JButton quit = new JButton("QUIT");
-        JButton retry = new JButton("Try again");
         quit.addActionListener(e -> System.exit(0));
         quit.setForeground(Color.black);
         quit.setFont(new Font("sanserif", Font.BOLD, 50));
-        quit.setBounds(80,480,200,100);
+        quit.setBounds(80, 480, 200, 100);
 
         retry.addActionListener(new ActionListener() {
             @Override
@@ -209,31 +259,32 @@ public class gameframe extends JFrame {
         });
         retry.setForeground(Color.black);
         retry.setFont(new Font("sanserif", Font.BOLD, 50));
-        retry.setBounds(470,480,250,100);
+        retry.setBounds(470, 480, 300, 100);
         finalScoreLabel = new JLabel();
         finalScoreLabel.setForeground(Color.white);
         finalScoreLabel.setBackground(Color.white);
-        finalScoreLabel.setBounds(300, 250, 400,200);
+        finalScoreLabel.setBounds(300, 250, 400, 200);
         finalScoreLabel.setText("");
         finalScoreLabel.setFont(new Font("sanserif", Font.BOLD, 50));
-        afterGamePanel.setPreferredSize(new Dimension(screenwidth,screenheight));
-        afterGamePanel.setLayout(null);
-        afterGamePanel.setBackground(Color.black);
+        afterGamePanelWin.setPreferredSize(new Dimension(screenwidth, screenheight));
+        afterGamePanelWin.setLayout(null);
+        afterGamePanelWin.setBackground(Color.black);
         BufferedImage image = null;
         try {
-            image = ImageIO.read(new File("src/frontend/pictures/death.png"));
+            image = ImageIO.read(new File("src/frontend/pictures/win.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         assert image != null;
         JLabel imagelabel = new JLabel(new ImageIcon(image));
-        imagelabel.setBounds(150,-50,500,500);
-        afterGamePanel.add(imagelabel);
-        afterGamePanel.add(finalScoreLabel);
-        afterGamePanel.add(quit);
-        afterGamePanel.add(retry);
-        afterGamePanel.setVisible(false);
+        imagelabel.setBounds(150, -50, 500, 500);
+        afterGamePanelWin.add(imagelabel);
+        afterGamePanelWin.add(finalScoreLabel);
+        afterGamePanelWin.add(quit);
+        afterGamePanelWin.add(retry);
+        afterGamePanelWin.setVisible(false);
     }
+
     private void menuPanel(){
         JLabel[]labels = new JLabel[3];
         menu = new JPanel();
@@ -388,6 +439,17 @@ public class gameframe extends JFrame {
                                             pointSystem = new pointSystem(score, isGameRunning);
                                             thread = new Thread(pointSystem);
                                             thread.start();
+                                            didPlayerWin();
+                                            if (didPlayerWinVariable == 1){
+                                                sfxclass win = new sfxclass("src/backend/soundFx/win.wav");
+                                                win.playSound();
+                                                gamePanel.setVisible(false);
+                                                controlPanel.setVisible(false);
+                                                inputPanel.setVisible(false);
+                                                gameframe.add(afterGamePanelWin);
+                                                finalScoreLabel.setText(Integer.toString(tempScore) + " POINTS");
+                                                afterGamePanelWin.setVisible(true);
+                                            }
                                         }else{
                                             System.out.println("you have already entered here");
                                         }
@@ -407,6 +469,7 @@ public class gameframe extends JFrame {
                                 temp.setForeground(Color.RED);
                             }
                         }
+
                     }
                 });
             }
@@ -453,6 +516,23 @@ public class gameframe extends JFrame {
             deathSound.playSound();
         }
         return lives == 0;
+    }
+    private void didPlayerWin(){
+        int count = 1;
+        for (int i = 0; i < textFields.length; i++){
+            for (int j = 0; j < textFields.length; j++){
+                String realValue = Integer.toString(sudukoBoardGenerator.tempBoard[i][j]);
+                if (textFields[i][j].getText().equals("") && sudukoBoardGenerator.mainBoard[i][j] == Integer.parseInt(realValue)){
+                    didPlayerWinVariable = 0;
+                }else{
+                    count++;
+                }
+
+                if (count == 81){
+                    didPlayerWinVariable = 1;
+                }
+            }
+        }
     }
 
     //styling

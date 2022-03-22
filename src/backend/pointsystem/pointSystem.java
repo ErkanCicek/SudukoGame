@@ -11,13 +11,11 @@ public class pointSystem implements Runnable{
         this.isGameRunning = isGameRunning;
     }
 
-    private int change(){
+    private void change(){
         if (this.score == 5){
-            System.out.println("");
-            return this.score;
+            System.out.println();
         }else{
             this.score = this.score - 5;
-            return this.score;
         }
     }
 
@@ -29,7 +27,7 @@ public class pointSystem implements Runnable{
                     break;
                 }else {
                     change();
-                    Thread.sleep(15000);
+                    Thread.sleep(15000); //ignore this warning?
                 }
             }
         } catch (InterruptedException e) {
@@ -37,7 +35,7 @@ public class pointSystem implements Runnable{
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         boolean gamerunning = true;
         int score = 45;
         pointSystem test = new pointSystem(score, gamerunning);

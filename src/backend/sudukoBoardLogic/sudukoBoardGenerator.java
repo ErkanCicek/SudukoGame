@@ -10,7 +10,6 @@ public class sudukoBoardGenerator {
     private static final ArrayList<Integer> values = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
     public static int[][]mainBoard = new int[9][9];
     public static int[][]tempBoard = new int[9][9];
-    //public static boolean[][]unavoidableSetsArray = new boolean[9][9];
     public static int count = 0;
 
     private static void randomize(){
@@ -18,7 +17,6 @@ public class sudukoBoardGenerator {
     }
     private static boolean generateSolvedGrid(int[][]board){
         randomize();
-        //Arrays.stream(unavoidableSetsArray).forEach(i -> Arrays.fill(i,false));
         for (int i = 0; i < row; i++){
             for (int j = 0; j < col; j++){
                 if (board[i][j] == 0){
@@ -41,7 +39,7 @@ public class sudukoBoardGenerator {
     }
 
     public static void createSuduko(int[][]board){
-        int rounds = 1;
+        int rounds = 200;
         Random r = new Random();
         int x;
         int y;
@@ -68,57 +66,5 @@ public class sudukoBoardGenerator {
     public static void getGenerateBoard(int[][] board){
         generateSolvedGrid(board);
     }
-
-    /*public static void copyArraySolvedBoard(int[][] board){
-        for (int i = 0; i < board.length; i++){
-            System.arraycopy(board[i], 0, mainBoard[i], 0, board.length);
-        }
-    }*/
-    /*public static void copyArrayTempBoard(int[][] board){
-        for (int i = 0; i < board.length; i++){
-            System.arraycopy(board[i], 0, tempBoard[i], 0, board.length);
-        }
-    }*/
-    /*private static void unavoidableSetX(int col){
-        int localrow = 0;
-        int localcol = col - col % 3;
-
-        for (int i = localrow; i < localrow + 3; i++){
-            for (int j = localcol; j < localcol + 2; j++){
-                int pair1 = mainBoard[i][j];
-                int pair2 = mainBoard[i][j+1];
-                for (int k = 0; k < mainBoard.length; k++){
-                    if (mainBoard[k][j] == pair2 && mainBoard[k][j+1] == pair1){
-                        unavoidableSetsArray[k][j] = true;
-                        unavoidableSetsArray[k][j+1] = true;
-                    }
-                }
-            }
-        }
-    }
-    private static void unavoidableSetY(int row){
-        int localrow = row - row % 3;
-        int localcol = 0;
-
-        for (int i = localcol; i < localcol + 3; i++){
-            for (int j = localrow; j < localrow + 2; j++){
-                int pair1 = mainBoard[j][i];
-                int pair2 = mainBoard[j+1][i];
-                for (int k = 0; k < mainBoard.length; k++) {
-                    if (mainBoard[j][k] == pair2 && mainBoard[j+1][k] == pair1) {
-                        unavoidableSetsArray[j][k] = true;
-                        unavoidableSetsArray[j+1][k] = true;
-                    }
-
-                }
-            }
-        }
-    }*/
-    /*public static void unavoidableSet_checker() {
-        for (int i = 2; i < 8; i+=2){
-            unavoidableSetX(i);
-            unavoidableSetY(i);
-        }
-    }*/
 
 }

@@ -2,7 +2,9 @@
 I have implemented a suduko game using Java swing and java fundamentals. Enjoy.
 
 
-In its simplest and most common configuration, sudoku consists of a 9 × 9 grid with numbers appearing in some of the squares. The object of the puzzle is to fill the remaining squares, using all the numbers 1–9 exactly once in each row, column, and nine 3 × 3 subgrids.![suduko](https://user-images.githubusercontent.com/90839872/159595454-d34ddfab-9319-47e0-9f8b-b51cc2cb3ba6.png)
+In its simplest and most common configuration, sudoku consists of a 9 × 9 grid with numbers appearing in some of the squares. The object of the puzzle is to fill the remaining squares, using all the numbers 1–9 exactly once in each row, column, and nine 3 × 3 subgrids.
+
+![suduko](https://user-images.githubusercontent.com/90839872/159595454-d34ddfab-9319-47e0-9f8b-b51cc2cb3ba6.png )
 
 ## How to install
 * Download a copy of this repository

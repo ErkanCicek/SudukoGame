@@ -16,10 +16,11 @@ In its simplest and most common configuration, sudoku consists of a 9 × 9 grid 
 * Soundeffects
 * Soundeffects
 * the logos
-* and many more, explore the game to find out!
 
 #### Pictures of the game
 <img src="https://user-images.githubusercontent.com/90839872/159596209-e561fbe9-6a88-4b78-bc4d-f9b43a3dd500.PNG"
  width="300" height="280">
  <img src="https://user-images.githubusercontent.com/90839872/159596341-589134ac-a511-4083-a2d8-620ce482d14d.PNG"
  width="300" height="280">
+ 
+ Dont forget to play the game, to see more!
